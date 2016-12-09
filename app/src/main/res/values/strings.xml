@@ -1,0 +1,13 @@
+<resources>
+    <string name="app_name">SurfsUp </string>
+    <string name="clientID">mUsername</string>
+    <string name="spotTitle">Your spots: </string>
+    <string name="sessionTitle">Your sessions</string>
+    <string name="welcomeTitle">Welcome to SurfsUp </string>
+    <string name="searchHint">Search for a surfSpot</string>
+    <string name="signed_in_fmt">User</string>
+    <string name="signedInAs">You are signed in as: </string>
+    <string name="searchTitle">Search Spot</string>
+    <string name="subtitleText">Results for </string>
+    <string name="search">search</string>
+</resources>

@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "469100764064",
+    "firebase_url": "https://martijnheijstekfinalapp-d37cc.firebaseio.com",
+    "project_id": "martijnheijstekfinalapp-d37cc",
+    "storage_bucket": "martijnheijstekfinalapp-d37cc.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:469100764064:android:b02ade73749a88f2",
+        "android_client_info": {
+          "package_name": "com.example.marty_000.martijnheijstekfinalapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "469100764064-k797a0gcplrt42hov3gi4hhv2hoabhuq.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.marty_000.martijnheijstekfinalapp",
+            "certificate_hash": "93765A77E647F4BDC1E254E5650315C3FC60B5E8"
+          }
+        },
+        {
+          "client_id": "469100764064-qi4k3275gb8i6vs7g2nfsleqd3n3riga.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAhw0Bk_OwVy5MGsajkUVgOu5l09Wmu1ZY"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "469100764064-qi4k3275gb8i6vs7g2nfsleqd3n3riga.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
