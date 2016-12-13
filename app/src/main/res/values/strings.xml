@@ -1,8 +1,9 @@
 <resources>
     <string name="app_name">SurfsUp </string>
     <string name="clientID">mUsername</string>
+    <string name="askSignIn">Sign in first to view your surfspots and sessions!</string>
     <string name="spotTitle">Your spots: </string>
-    <string name="sessionTitle">Your sessions</string>
+    <string name="sessionTitle">Your planned sessions</string>
     <string name="welcomeTitle">Welcome to SurfsUp </string>
     <string name="searchHint">Search for a surfSpot</string>
     <string name="signed_in_fmt">User</string>
@@ -10,4 +11,14 @@
     <string name="searchTitle">Search Spot</string>
     <string name="subtitleText">Results for </string>
     <string name="search">search</string>
+    <string name="saveSpot">Save spot</string>
+    <string name="saveSession"> Save Session</string>
+    <string name="weather">Todays weather:</string>
+    <string name="removeSpot">remove spot</string>
+    <string name="weatherError">No weather is avaible</string>
+    <string name="changeDate">change date</string>
+    <string name="makeSession">Make a session on this spot</string>
+    <string name="plannedOn">Session planned on: </string>
+    <string name="saveSpotTitle">Save this spot to your favourites</string>
+    <string name="removeSpotTitle">Remove this spot from your favourites</string>
 </resources>

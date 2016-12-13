@@ -39,4 +39,9 @@ public class WeatherAsyncTask extends AsyncTask<URL,Integer,String> {
         // Returns the json dict as a string
         return result;
     }
+// TODO set Listview in here
+//    @Override
+//    protected void onPostExecute(String s) {
+//        super.onPostExecute(s);
+//    }
 }

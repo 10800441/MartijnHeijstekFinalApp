@@ -8,18 +8,20 @@ public class SurfSpot {
     public int dateID;
     public String spotName;
     public String country;
-    public String surferType;
-    public String spotWhoeid;
-    public int totalSurfers;
+    public String spotLink;
 
-    public SurfSpot (int dateID, String spotName, int totalSurfers) {
-        this.dateID = dateID;
-        this.spotName = spotName;
-        this.totalSurfers= totalSurfers;
-    }
-    public SurfSpot (String spotName, String country, String spotWhoeid){
+    public SurfSpot (String spotName, String country, String spotLink) {
         this.spotName = spotName;
         this.country = country;
-        this.spotWhoeid = spotWhoeid;
+        this.spotLink = spotLink;
+    }
+    public SurfSpot (String spotName, String spotLink, int dateID, String country){
+        this.spotName = spotName;
+        this.spotLink = spotLink;
+        this.dateID = dateID;
+        this.country = country;
+    }
+    public String toString() {
+        return spotName + " ("+country + ")";
     }
     }

@@ -45,7 +45,9 @@ public class SearchActivity extends AppCompatActivity {
         try {
             String query = URLEncoder.encode(searchQuery.trim(), "UTF-8");
 
-            completeUrl = new URL("http://where.yahooapis.com/v1/places.q('sydney%20opera%20house')?appid=dj0yJmk9TWtYeHdKcGxtdnZ5JmQ9WVdrOU5HRk9kVTFXTm1zbWNHbzlNQS0tJnM9Y29uc3VtZXJzZWNyZXQmeD00Yw--");
+
+            completeUrl = new URL("http://api.wunderground.com/api/3eedcfbf42e02e5e/geolookup/forecast/q/"+ query + ".json");
+            //completeUrl = new URL("http://where.yahooapis.com/v1/places.q('amsterdam')?appid=dj0yJmk9TWtYeHdKcGxtdnZ5JmQ9WVdrOU5HRk9kVTFXTm1zbWNHbzlNQS0tJnM9Y29uc3VtZXJzZWNyZXQmeD00Yw--");
         } catch (IOException ex){
             ex.printStackTrace();
         }
@@ -62,7 +64,7 @@ public class SearchActivity extends AppCompatActivity {
                         NetworkInfo.State.CONNECTED)) {
 
             // Retrieve the information from the API
-            getMovieArray(completeUrl);
+            getSpotArray(completeUrl);
 
         } else {
             // Not connected to a network
@@ -79,32 +81,36 @@ public class SearchActivity extends AppCompatActivity {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 SurfSpot surfSpot = (SurfSpot) listView.getItemAtPosition(i);
-                Intent GoToSurfSpot = new Intent(SearchActivity.this, SurfSpotActivity.class);
-                GoToSurfSpot.putExtra("surfSpot", surfSpot.spotName);
-                GoToSurfSpot.putExtra("calendarDate", surfSpot.dateID);
-                startActivity(GoToSurfSpot);
+                Intent goToSurfSpot = new Intent(SearchActivity.this, SurfSpotActivity.class);
+                goToSurfSpot.putExtra("surfSpot", surfSpot.spotName);
+                goToSurfSpot.putExtra("spotLink", surfSpot.spotLink);
+                // calendarDate 0 corresponds to today
+                goToSurfSpot.putExtra("calendarDate", "0");
+                goToSurfSpot.putExtra("spotSaved", false);
+                startActivity(goToSurfSpot);
             }
         });
     }
 
-    private void getMovieArray(URL url){
+    private void getSpotArray(URL url){
         try {
             // Get dict from the AsyncTask
             JSONObject jsonDict = new JSONObject(new WeatherAsyncTask().execute(url).get());
-            System.out.println(jsonDict.getString("query"));
-            if (jsonDict.getString("Response").equals("False")) {
-                Toast.makeText(this, jsonDict.getString("Error"), Toast.LENGTH_SHORT).show();
+            JSONObject response = jsonDict.getJSONObject("response");
+            JSONArray spotNameArray = response.getJSONArray("results");
+            if (spotNameArray.length() == 0) {
+                Toast.makeText(this, "There were no matching surf spots", Toast.LENGTH_SHORT).show();
             } else {
-                JSONArray returnedSpots = new JSONArray(jsonDict.getString("Search"));
-                for (int i = 0; i < returnedSpots.length(); i++) {
-                    JSONObject surfSpotJSON = returnedSpots.getJSONObject(i);
-
-                    surfSpotList.add(new SurfSpot(surfSpotJSON.get("city").toString(),
-                            surfSpotJSON.get("region").toString(),
-                            surfSpotJSON.get("country").toString()));
-                    //json info title, movie.getString("Year"
+                for (int i = 0; i < spotNameArray.length(); i++) {
+                    JSONObject spotName = spotNameArray.getJSONObject(i);
+                    surfSpotList.add(new SurfSpot(spotName.getString("name"),
+                            spotName.getString("country_name"),
+                            spotName.getString("l")));
                 }
             }
+
+
+
 
         } catch (InterruptedException | ExecutionException | JSONException e) {
             e.printStackTrace();

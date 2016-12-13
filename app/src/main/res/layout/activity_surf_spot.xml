@@ -10,4 +10,114 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="com.example.marty_000.martijnheijstekfinalapp.SurfSpotActivity">
 
+<RelativeLayout
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_centerHorizontal="true"
+    android:layout_margin="5dp"
+    android:id="@+id/SaveButtons">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="24sp"
+        android:layout_centerHorizontal="true"
+        android:layout_margin="5dp"
+        android:id="@+id/spotTitle"/>
+    <TextView
+        android:layout_centerVertical="true"
+        android:layout_margin="5dp"
+        android:layout_below="@+id/spotTitle"
+        android:id="@+id/saveSpotTitle"
+        android:layout_marginTop="10dp"
+        android:textSize="18sp"
+        android:text="@string/saveSpotTitle"
+        android:layout_centerHorizontal="true"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+    <Button
+        android:layout_margin="5dp"
+        android:layout_below="@+id/saveSpotTitle"
+        android:layout_width="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_height="wrap_content"
+        android:text="@string/saveSpot"
+        android:onClick="onClick"
+        android:id="@+id/saveSpotButton"/>
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/SaveButtons"
+        android:layout_margin="5dp"
+        android:id="@+id/weatherDisplay">
+        <TextView
+            android:layout_margin="3dp"
+            android:id="@+id/weatherDescriptionTitle"
+            android:text="@string/weather"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+        <TextView
+            android:layout_margin="3dp"
+            android:layout_below="@+id/weatherDescriptionTitle"
+            android:id="@+id/weatherDescription"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+    </RelativeLayout >
+
+<RelativeLayout
+
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_centerHorizontal="true"
+    android:layout_below="@+id/weatherDisplay"
+    android:layout_margin="5dp"
+    android:layout_alignParentBottom="true"
+    android:id="@+id/dateDisplay">
+    <TextView
+        android:layout_centerVertical="true"
+        android:layout_margin="5dp"
+        android:id="@+id/makeSessionTitle"
+        android:textSize="18sp"
+        android:text="@string/makeSession"
+        android:layout_centerHorizontal="true"
+        android:layout_above="@+id/pickDateTV"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+    <TextView
+        android:layout_centerVertical="true"
+        android:layout_margin="3dp"
+        android:id="@+id/pickDateTV"
+
+        android:layout_width="wrap_content"
+        android:layout_toRightOf="@+id/pickDateTitle"
+        android:layout_toEndOf="@+id/pickDateTitle"
+        android:layout_height="wrap_content" />
+    <TextView
+        android:layout_centerVertical="true"
+        android:layout_margin="3dp"
+        android:id="@+id/pickDateTitle"
+        android:text="@string/plannedOn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+    <Button
+
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/changeDate"
+        android:layout_below="@+id/pickDateTV"
+        android:onClick="setDate"
+        android:id="@+id/changeDate"/>
+    <Button
+        android:layout_below="@+id/pickDateTV"
+        android:layout_toRightOf="@+id/changeDate"
+        android:layout_toEndOf="@+id/changeDate"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/saveSession"
+        android:onClick="onClick"
+        android:id="@+id/saveSessionButton"/>
+</RelativeLayout>
 </RelativeLayout>

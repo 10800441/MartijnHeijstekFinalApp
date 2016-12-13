@@ -2,22 +2,19 @@ package com.example.marty_000.martijnheijstekfinalapp;
 
 public class Session {
 
-    public int dateID;
     public String spotName;
-    public String surferType;
-    public int startTime;
-    public int endTime;
+    public int year;
+    public int month;
+    public int day;
 
-    public Session (int dateID, String spotName, String surferType, int startTime, int endTime){
-        this. dateID =  dateID;
+    public Session (int day, int month, int year, String spotName){
         this.spotName = spotName;
-        this.surferType = surferType;
-
-        this.startTime = startTime;
-        this.endTime = endTime;
+        this.year = year;
+        this.month = month;
+        this.day = day;
     }
     @Override
     public String toString() {
-        return dateID + spotName;
+        return day + "/" + month + "/" + year + "; " + spotName;
     }
 }

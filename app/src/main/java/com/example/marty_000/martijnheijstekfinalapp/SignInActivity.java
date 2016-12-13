@@ -34,7 +34,6 @@ public class SignInActivity extends AppCompatActivity implements View.OnClickLis
 
     // Firebase instance variables
     private FirebaseAuth mFirebaseAuth;
-
     private static final int RC_SIGN_IN = 9001;
 
     @Override
@@ -117,7 +116,7 @@ public class SignInActivity extends AppCompatActivity implements View.OnClickLis
 
             System.out.println(result.getStatus().toString());
             Toast.makeText(this, "result was no success", Toast.LENGTH_SHORT).show();
-          }
+        }
     }
 
     private void firebaseAuthWithGoogle(GoogleSignInAccount acct) {
@@ -129,9 +128,7 @@ public class SignInActivity extends AppCompatActivity implements View.OnClickLis
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         Log.d(TAG, "signInWithCredential:onComplete:" + task.isSuccessful());
 
-                        // If sign in fails, display a message to the user. If sign in succeeds
-                        // the auth state listener will be notified and logic to handle the
-                        // signed in user can be handled in the listener.
+                        // If sign in fails, display a message to the user.
                         if (!task.isSuccessful()) {
                             Log.w(TAG, "signInWithCredential", task.getException());
                             Toast.makeText(SignInActivity.this, "Authentication failed.",
