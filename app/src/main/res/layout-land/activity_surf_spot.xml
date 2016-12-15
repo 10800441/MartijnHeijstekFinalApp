@@ -12,8 +12,10 @@
 
 <RelativeLayout
     android:layout_width="wrap_content"
+    android:layout_alignLeft="@+id/saveLayout"
+    android:layout_alignParentTop="true"
+    android:layout_alignStart="@+id/saveLayout"
     android:layout_height="wrap_content"
-    android:layout_centerHorizontal="true"
     android:layout_margin="5dp"
     android:id="@+id/titleLayout">
 
@@ -21,25 +23,28 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textSize="24sp"
+        android:text="@string/SurfSpot"
         android:layout_centerHorizontal="true"
         android:layout_margin="5dp"
         android:id="@+id/spotTitle"/>
     </RelativeLayout>
 
     <RelativeLayout
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
+        android:id="@+id/saveLayout"
+        android:layout_below="@+id/weatherDisplay"
         android:layout_height="match_parent"
-        android:layout_centerHorizontal="true"
         android:background="@drawable/back"
-        android:padding="2dp"
+        android:padding="10dp"
         android:layout_margin="5dp"
-        android:layout_below="@+id/titleLayout">
+        android:layout_alignParentBottom="true" >
 
         <RelativeLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/saveSpotLayout"
             android:padding="5dp"
+            android:layout_centerVertical="true"
             android:layout_centerHorizontal="true">
 
             <TextView
@@ -61,13 +66,17 @@
                 android:id="@+id/saveSpotButton"/>
         </RelativeLayout>
 
+    </RelativeLayout>
         <RelativeLayout
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/saveSpotLayout"
+            android:layout_toRightOf="@+id/saveLayout"
+            android:layout_toEndOf="@+id/saveLayout"
             android:background="@drawable/back"
-            android:layout_centerVertical="true"
-            android:layout_margin="10dp"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentTop="true"
+            android:layout_margin="5dp"
             android:padding="10dp"
             android:id="@+id/weatherDisplay">
 
@@ -90,7 +99,10 @@
         <RelativeLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_centerHorizontal="true"
+            android:padding="10dp"
+            android:background="@drawable/back"
+            android:layout_toRightOf="@+id/saveLayout"
+            android:layout_toEndOf="@+id/saveLayout"
             android:layout_below="@+id/weatherDisplay"
             android:layout_margin="5dp"
             android:layout_alignParentBottom="true"
@@ -98,7 +110,7 @@
 
             <TextView
                 android:layout_centerVertical="true"
-                android:layout_margin="5dp"
+                android:layout_margin="3dp"
                 android:id="@+id/makeSessionTitle"
                 android:textSize="18sp"
                 android:text="@string/makeSession"
@@ -126,7 +138,7 @@
 
             <Button
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_height="60dp"
                 android:text="@string/changeDate"
                 android:layout_below="@+id/pickDateTV"
                 android:onClick="setDate"
@@ -137,10 +149,9 @@
                 android:layout_toRightOf="@+id/changeDate"
                 android:layout_toEndOf="@+id/changeDate"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_height="60dp"
                 android:text="@string/saveSession"
                 android:onClick="onClick"
                 android:id="@+id/saveSessionButton"/>
         </RelativeLayout>
     </RelativeLayout>
-</RelativeLayout>

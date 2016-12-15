@@ -10,7 +10,7 @@
     tools:context="com.example.marty_000.martijnheijstekfinalapp.MainActivity">
 
  <RelativeLayout
-     android:layout_width="match_parent"
+     android:layout_width="wrap_content"
      android:id="@+id/titleLayout"
      android:layout_height="wrap_content">
         <TextView
@@ -34,7 +34,7 @@
         android:background="@drawable/back"
         android:padding="10dp"
         android:layout_below="@+id/titleLayout"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_margin="5dp"
         android:layout_height="wrap_content"
         android:id="@+id/search">
@@ -44,9 +44,9 @@
             android:id="@+id/SearchEditText"
             android:hint="@string/searchHint"/>
         <Button
-            android:layout_alignParentEnd="true"
-            android:layout_alignParentRight="true"
+            android:layout_centerHorizontal="true"
             android:layout_width="wrap_content"
+            android:layout_below="@+id/SearchEditText"
             android:layout_height="wrap_content"
             android:onClick="searchSurfSpot"
             android:id="@+id/SearchButton"
@@ -56,14 +56,16 @@
         android:background="@drawable/back"
         android:layout_margin="5dp"
         android:padding="10dp"
-        android:layout_below="@+id/search"
-        android:layout_width="match_parent"
+        android:layout_toRightOf="@+id/search"
+        android:layout_toEndOf="@+id/search"
+        android:layout_alignParentTop="true"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content">
     <RelativeLayout
         android:layout_margin="3dp"
         android:id="@+id/spotLayout"
         android:layout_width="match_parent"
-        android:layout_height="180dp">
+        android:layout_height="120dp">
         <TextView
             android:layout_width="wrap_content"
             android:text="@string/spotTitle"
@@ -73,8 +75,8 @@
         <ListView
             android:layout_below="@+id/spotTitle"
             android:layout_margin="5dp"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:id="@+id/spotListView"/>
     </RelativeLayout>
     <RelativeLayout
@@ -83,7 +85,7 @@
         android:layout_margin="3dp"
         android:layout_width="match_parent"
         android:layout_alignParentBottom="true"
-        android:layout_height="120dp">
+        android:layout_height="100dp">
         <TextView
             android:layout_width="wrap_content"
             android:text="@string/sessionTitle"
@@ -93,8 +95,8 @@
         <ListView
             android:layout_below="@+id/sessionTitle"
             android:layout_margin="5dp"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:id="@+id/sessionListView"/>
     </RelativeLayout></RelativeLayout>
 </RelativeLayout>

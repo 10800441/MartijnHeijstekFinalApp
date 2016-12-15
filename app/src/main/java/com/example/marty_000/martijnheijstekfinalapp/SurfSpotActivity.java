@@ -36,6 +36,16 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
+/* App: SurfsUp
+ * Course: Native App Studio
+ * Created: 16-12-2016
+ * Author: Martijn Heijstek, 10800441
+ *
+ * Description: SurfSpotActivity
+ * This class displays an overview of a specific surfSpot including
+ * the current waether.
+ */
+
 public class SurfSpotActivity extends AppCompatActivity {
 
     private FirebaseDatabase database;
@@ -68,7 +78,7 @@ public class SurfSpotActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_surf_spot);
 
-        //Instanciate all the nesscecairy elements
+        //Instanciate all the necessary elements
         Auth = FirebaseAuth.getInstance();
         user = Auth.getCurrentUser();
         Intent PrevScreenIntent = getIntent();
@@ -76,6 +86,7 @@ public class SurfSpotActivity extends AppCompatActivity {
         spotLink= PrevScreenIntent.getStringExtra("spotLink");
         relativeDate  = PrevScreenIntent.getIntExtra("calendarDate", 0);
         spotSaved =  PrevScreenIntent.getBooleanExtra("savedSpot", false);
+        country = PrevScreenIntent.getStringExtra("country");
         database = FirebaseDatabase.getInstance();
 
         // Set the title of the activity
@@ -84,45 +95,17 @@ public class SurfSpotActivity extends AppCompatActivity {
         weatherDescription = (TextView) findViewById(R.id.weatherDescription);
         saveSpotButton = (Button) findViewById(R.id.saveSpotButton);
         saveSpotTitle = (TextView) findViewById(R.id.saveSpotTitle);
+
         // retrieve saved data
         if (user != null) {
-
-
-            surfSpotReference = database.getReference("/users/" + user.getUid() + "/surfSpots/");
-            surfSessionReference = database.getReference("/users/" + user.getUid() + "/surfSessions/");
-            surfSpotReference.addValueEventListener(new ValueEventListener() {
-                @Override
-                public void onDataChange(DataSnapshot dataSnapshot) {
-                    HashMap<String, HashMap<String, String>>  commentKey = (HashMap) dataSnapshot.getValue();
-                    if (commentKey != null){
-
-                        for(Map.Entry<String, HashMap<String, String>> entry : commentKey.entrySet()) {
-                            HashMap<String, String> a = entry.getValue();
-                            Iterator it =a.entrySet().iterator();
-
-                            while (it.hasNext()) {
-                                Map.Entry pair = (Map.Entry)it.next();
-                                if(pair.getKey().toString().equals("spotLink")){
-                                    String link = (String) pair.getValue();
-                                    if (link.equals(spotLink)){
-                                        spotSaved = true;
-                                        saveSpotButton.setText(R.string.removeSpot);
-                                        saveSpotTitle.setText(R.string.removeSpotTitle);
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-
-                @Override
-                public void onCancelled(DatabaseError databaseError) {
-                    // Getting Post failed, log a message
-                    Log.w(TAG, "loadPost:onCancelled", databaseError.toException());
-                    // ...
-                }
-            });
+            // retrieve user preferences
+            retrievePreferences();
         }
+        if(spotSaved) {
+            saveSpotButton.setText(R.string.removeSpot);
+            saveSpotTitle.setText(R.string.removeSpotTitle);
+        }
+
 
         // access API to retrieve spot specifics
         retrieveSpotWeather();
@@ -134,12 +117,9 @@ public class SurfSpotActivity extends AppCompatActivity {
 
         month = calendar.get(Calendar.MONTH);
         day = calendar.get(Calendar.DAY_OF_MONTH);
-        showDate(year, month + 1, day);
+        showDate();
 
-
-
-        
-        // Action listener for signing out
+        // Action listener for user signed out
         authListener = new FirebaseAuth.AuthStateListener() {
             @Override
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
@@ -154,29 +134,65 @@ public class SurfSpotActivity extends AppCompatActivity {
     }
 
 
+    // Set the page corresponding to the users preferences
+    private void retrievePreferences(){
+        surfSpotReference = database.getReference("/users/" + user.getUid() + "/surfSpots/");
+        surfSessionReference = database.getReference("/users/" + user.getUid() + "/surfSessions/");
+        surfSpotReference.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                HashMap<String, HashMap<String, String>>  commentKey = (HashMap) dataSnapshot.getValue();
+                if (commentKey != null){
 
+                    for(Map.Entry<String, HashMap<String, String>> entry : commentKey.entrySet()) {
+                        HashMap<String, String> a = entry.getValue();
+                        Iterator it =a.entrySet().iterator();
+
+                        while (it.hasNext()) {
+                            Map.Entry pair = (Map.Entry)it.next();
+                            if(pair.getKey().toString().equals("spotLink")){
+                                String link = (String) pair.getValue();
+                                if (link.equals(spotLink)){
+                                    spotSaved = true;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                // Getting Post failed, log a message
+                Log.w(TAG, "loadPost:onCancelled", databaseError.toException());
+            }
+        });
+    }
 
     // This method retieves the wheather for the chosen day
     public void retrieveSpotWeather() {
         try {
-            completeUrl = new URL("http://api.wunderground.com/api/3eedcfbf42e02e5e/forecast/" + spotLink + ".json");
+            completeUrl = new URL("http://api.wunderground.com/api/3eedcfbf42e02e5e/forecast/" +
+                    spotLink + ".json");
 
             // Get dict from the AsyncTask
             JSONObject jsonDict = new JSONObject(new WeatherAsyncTask().execute(completeUrl).get());
-            JSONObject response = jsonDict.getJSONObject("forecast");
-            System.out.println(response.toString());
-            JSONObject txt = response.getJSONObject("txt_forecast");
-            System.out.println(txt.toString());
-            JSONArray forecast = txt.getJSONArray("forecastday");
+            if (jsonDict.getJSONObject("forecast")!=null) {
 
-            for (int i = 0; i < forecast.length(); i++){
-                JSONObject day = forecast.getJSONObject(i);
-                // Get the weather for the required date
-                if (day.getString("period").equals(String.valueOf(relativeDate))){
-                    weatherDescription.setText(day.getString("fcttext_metric"));
+                // Get sublist of sublists
+                JSONObject response = jsonDict.getJSONObject("forecast");
+                JSONObject txt = response.getJSONObject("txt_forecast");
+                JSONArray forecast = txt.getJSONArray("forecastday");
+
+                for (int i = 0; i < forecast.length(); i++) {
+                    JSONObject day = forecast.getJSONObject(i);
+                    // Get the weather for the required date (default is current day)
+                    if (day.getString("period").equals(String.valueOf(relativeDate))) {
+                        weatherDescription.setText(day.getString("fcttext_metric"));
+                    }
                 }
-            } if (forecast.length() == 0) {
-                weatherDescription.setText(R.string.weatherError);
+
+            } else {  weatherDescription.setText(R.string.weatherError);
             }
 
         } catch (InterruptedException | ExecutionException | JSONException | MalformedURLException e) {
@@ -186,15 +202,17 @@ public class SurfSpotActivity extends AppCompatActivity {
     public void onClick(View v) {
         switch (v.getId()) {
 
-            // Save a surfSpot to fireBase
+            // Save a surfSpot to firebase
             case R.id.saveSpotButton:
                 if (!spotSaved) {
                     Toast.makeText(this, "Spot is saved", Toast.LENGTH_SHORT).show();
-                    surfSpotReference.child(spotName)
-                            .setValue(new SurfSpot(spotName, spotLink, relativeDate, country));
+                   surfSpotReference.child(spotName).setValue(new SurfSpot(spotName, spotLink, relativeDate, country));
                     saveSpotButton.setText(R.string.removeSpot);
                     spotSaved = true;
-                } else if(spotSaved) {
+                }
+
+                // remove a surfSpot from firebase
+                else if(spotSaved) {
                     Toast.makeText(this, "Spot is removed", Toast.LENGTH_SHORT).show();
                     surfSpotReference.child(spotName).removeValue();
                     spotSaved = false;
@@ -202,13 +220,14 @@ public class SurfSpotActivity extends AppCompatActivity {
                 }
                 break;
 
+            // Save a session to firebase
             case R.id.saveSessionButton:
-                final int saveDay = day;
-                final int saveMonth = month;
-                final int saveYear= year;
-                    surfSessionReference.child((saveDay + "-" + (saveMonth+1) + "-" + saveYear))
-                            .setValue(new Session(saveDay, saveMonth,saveYear, spotName));
-                    Toast.makeText(this, "Session is saved", Toast.LENGTH_SHORT).show();
+
+                // The user can save only one session per day
+                surfSessionReference.
+                        child((day + "-" + month + "-" + year)).
+                        setValue(new Session(day, month, year, spotName));
+                Toast.makeText(this, "Session is saved", Toast.LENGTH_SHORT).show();
 
                 break;
         }
@@ -234,37 +253,28 @@ public class SurfSpotActivity extends AppCompatActivity {
         return null;
     }
 
+    // Get the date the user has chosen
     private DatePickerDialog.OnDateSetListener myDateListener = new
             DatePickerDialog.OnDateSetListener() {
                 @Override
                 public void onDateSet(DatePicker arg0,
                                       int arg1, int arg2, int arg3) {
-                    showDate(arg1, arg2 + 1, arg3);
+                    year = arg1;
+                    month = arg2+1;
+                    day = arg3;
+                    showDate();
                 }
             };
 
-    private void showDate(int year, int month, int day) {
+    private void showDate() {
         dateView.setText(new StringBuilder().append(day).append("/")
                 .append(month).append("/").append(year));
     }
-//    private boolean afterCurrent() {
-//        boolean beforeToday = false;
-//        try{
-//
-//            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-//            Date currentDate = sdf.parse(calendar.get(Calendar.YEAR)+"-"+calendar.get(Calendar.MONTH)+"-"+  calendar.get(Calendar.DAY_OF_MONTH));
-//            Date pickedDate = sdf.parse(year + "-" + month + "-" + day);
-//            System.out.println(currentDate.toString());
-//            System.out.println(pickedDate.toString());
-//            if(pickedDate.before(currentDate)){
-//                beforeToday = true;
-//                System.out.println("");
-//            }
-//
-//        }catch(ParseException ex){
-//            ex.printStackTrace();
-//        }
-//        return beforeToday;
-//    }
 
+    @Override
+    public void onBackPressed() {
+        Intent intent = new Intent(getApplication(), MainActivity.class);
+        startActivity(intent);
+        finish();
+    }
 }

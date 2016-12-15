@@ -6,6 +6,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -15,6 +16,8 @@ import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.auth.api.signin.GoogleSignInResult;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.ResultCallback;
+import com.google.android.gms.common.api.Status;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthCredential;
@@ -24,13 +27,24 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
 import com.google.firebase.database.FirebaseDatabase;
 
+/* App: SurfsUp
+ * Course: Native App Studio
+ * Created: 16-12-2016
+ * Author: Martijn Heijstek, 10800441
+ *
+ * Description: SignInActivity
+ * This class authenticates the user using google Sign In.
+ * Then the user is authenticated to use firebase.
+ */
+
 public class SignInActivity extends AppCompatActivity implements View.OnClickListener,
         GoogleApiClient.OnConnectionFailedListener {
 
     private static final String TAG = "SignInActivity";
     private FirebaseAuth.AuthStateListener authListener;
-    TextView mStatusTextView;
     private GoogleApiClient mGoogleApiClient;
+    TextView mStatusTextView;
+
 
     // Firebase instance variables
     private FirebaseAuth mFirebaseAuth;
@@ -40,14 +54,16 @@ public class SignInActivity extends AppCompatActivity implements View.OnClickLis
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sign_in);
+
         mStatusTextView = (TextView) findViewById(R.id.mStatusTextView);
         findViewById(R.id.sign_in_button).setOnClickListener(this);
+
         // Configure Google Sign In
         // Configure sign-in to request the user's ID, email address, and basic
         // profile. ID and basic profile are included in DEFAULT_SIGN_IN.
         if (savedInstanceState == null) {
             FirebaseDatabase.getInstance().setPersistenceEnabled(true);
-        }
+        } 
 
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestIdToken(getString(R.string.default_web_client_id))
@@ -62,7 +78,6 @@ public class SignInActivity extends AppCompatActivity implements View.OnClickLis
                 .build();
 
         // Initialize FirebaseAuth
-
         mFirebaseAuth = FirebaseAuth.getInstance();
         authListener = new FirebaseAuth.AuthStateListener() {
             @Override
@@ -80,19 +95,34 @@ public class SignInActivity extends AppCompatActivity implements View.OnClickLis
         };
     }
 
+    // Oncklick for the button
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.sign_in_button:
                 signIn();
-
+                break;
+            case R.id.sign_out_button:
+                signOut();
                 break;
         }
+
     }
 
-
+    // Use the goole API
     private void signIn() {
         Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(mGoogleApiClient);
         startActivityForResult(signInIntent, RC_SIGN_IN);
+    }
+    public void signOut() {
+        Auth.GoogleSignInApi.signOut(mGoogleApiClient).setResultCallback(
+                new ResultCallback<Status>() {
+                    @Override
+                    public void onResult(Status status) {
+                        Intent intent = new Intent(getApplication(), MainActivity.class);
+                        startActivity(intent);
+                        finish();
+                    }
+                });
     }
 
 
@@ -107,18 +137,21 @@ public class SignInActivity extends AppCompatActivity implements View.OnClickLis
             handleSignInResult(result);
         }
     }
+
+    // Action corresponding to wether the result succeds or not
     private void handleSignInResult(GoogleSignInResult result) {
         Log.d(TAG, "handleSignInResult:" + result.isSuccess());
         if (result.isSuccess()) {
             GoogleSignInAccount account = result.getSignInAccount();
             firebaseAuthWithGoogle(account);
-        }  else {
 
+        }  else {
             System.out.println(result.getStatus().toString());
             Toast.makeText(this, "result was no success", Toast.LENGTH_SHORT).show();
         }
     }
 
+    // Use the google account for firebase authentication
     private void firebaseAuthWithGoogle(GoogleSignInAccount acct) {
         Log.d(TAG, "firebaseAuthWithGooogle:" + acct.getId());
         AuthCredential credential = GoogleAuthProvider.getCredential(acct.getIdToken(), null);
@@ -133,8 +166,10 @@ public class SignInActivity extends AppCompatActivity implements View.OnClickLis
                             Log.w(TAG, "signInWithCredential", task.getException());
                             Toast.makeText(SignInActivity.this, "Authentication failed.",
                                     Toast.LENGTH_SHORT).show();
-                        } else {
+                        }
 
+                        // If the sign in is succesful restart the main Activity
+                        else {
                             startActivity(new Intent(SignInActivity.this, MainActivity.class));
                             finish();
                         }
@@ -150,12 +185,14 @@ public class SignInActivity extends AppCompatActivity implements View.OnClickLis
         Toast.makeText(this, "Google Play Services error.", Toast.LENGTH_SHORT).show();
     }
 
+    // Standard method, set listener
     @Override
     public void onStart() {
         super.onStart();
         mFirebaseAuth.addAuthStateListener(authListener);
     }
 
+    // Standard method, remove listener
     @Override
     public void onStop() {
         super.onStop();

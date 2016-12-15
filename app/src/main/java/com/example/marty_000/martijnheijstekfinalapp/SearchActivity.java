@@ -1,9 +1,5 @@
 package com.example.marty_000.martijnheijstekfinalapp;
 
-
-/*
-    * I this activity the API checks for matching whoeid's and redui
- */
 import android.content.Context;
 import android.content.Intent;
 import android.net.ConnectivityManager;
@@ -14,6 +10,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import org.json.JSONArray;
@@ -25,6 +22,19 @@ import java.net.URL;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.concurrent.ExecutionException;
+
+/* App: SurfsUp
+ * Course: Native App Studio
+ * Created: 16-12-2016
+ * Author: Martijn Heijstek, 10800441
+ *
+ * Description: SearchActivity
+ * This class displays the results from the users query.
+ * The users searches for a SurfSpot by name. This query
+ * is passed to the "wunderground" API and a list of
+ * matching cities is returned. A user can view click on a
+ * surfspot to view more information.
+ */
 
 public class SearchActivity extends AppCompatActivity {
 
@@ -39,57 +49,55 @@ public class SearchActivity extends AppCompatActivity {
         Intent PrevScreenIntent = getIntent();
         String searchQuery = PrevScreenIntent.getStringExtra("searchQuery");
 
-        //Get the tags the user provided
+        //Get the tags the user provided and form a URL
         URL completeUrl = null;
 
         try {
             String query = URLEncoder.encode(searchQuery.trim(), "UTF-8");
-
-
             completeUrl = new URL("http://api.wunderground.com/api/3eedcfbf42e02e5e/geolookup/forecast/q/"+ query + ".json");
-            //completeUrl = new URL("http://where.yahooapis.com/v1/places.q('amsterdam')?appid=dj0yJmk9TWtYeHdKcGxtdnZ5JmQ9WVdrOU5HRk9kVTFXTm1zbWNHbzlNQS0tJnM9Y29uc3VtZXJzZWNyZXQmeD00Yw--");
+
         } catch (IOException ex){
             ex.printStackTrace();
         }
 
+        // Use the WeatherAsincTask
+        getSpotArray(completeUrl);
 
-        // Check for internet connection
-        // Source: http://stackoverflow.com/questions/5474089/
-        //          how-to-check-currently-internet-connection-is-available-or-not-in-android
-        ConnectivityManager connectivityManager =
-                (ConnectivityManager)getSystemService(Context.CONNECTIVITY_SERVICE);
-        if((connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_MOBILE).getState() ==
-                NetworkInfo.State.CONNECTED ||
-                connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI).getState() ==
-                        NetworkInfo.State.CONNECTED)) {
+        // Fill the Listview
+        setAdapter();
 
-            // Retrieve the information from the API
-            getSpotArray(completeUrl);
+    }
 
-        } else {
-            // Not connected to a network
-            Toast.makeText(this, "No internet connection detected", Toast.LENGTH_LONG).show();
+    // A standard ArrayAdapter that will fill the ListView with names of known Surfspots
+    private void setAdapter() {
+        if (surfSpotList.size() == 0 || surfSpotList == null) {
+            Toast.makeText(this, "There were no matching surf spots", Toast.LENGTH_SHORT).show();
+            TextView subtitle = (TextView) findViewById(R.id.searchSubtitle);
+            subtitle.setText(R.string.noSpots);
         }
 
-        // Standard adapter
-        ArrayAdapter<SurfSpot> moviesAdapter = new ArrayAdapter<>(this,
-                android.R.layout.simple_list_item_1, surfSpotList);
-        listView.setAdapter(moviesAdapter);
+        // Fill the ListView with the aquired surfspots
+        else {
+            ArrayAdapter<SurfSpot> surfSpotAdapter = new ArrayAdapter<>(this,
+                    android.R.layout.simple_list_item_1, surfSpotList);
 
-        // Actoin listener for the items in the listView
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                SurfSpot surfSpot = (SurfSpot) listView.getItemAtPosition(i);
-                Intent goToSurfSpot = new Intent(SearchActivity.this, SurfSpotActivity.class);
-                goToSurfSpot.putExtra("surfSpot", surfSpot.spotName);
-                goToSurfSpot.putExtra("spotLink", surfSpot.spotLink);
-                // calendarDate 0 corresponds to today
-                goToSurfSpot.putExtra("calendarDate", "0");
-                goToSurfSpot.putExtra("spotSaved", false);
-                startActivity(goToSurfSpot);
-            }
-        });
+            listView.setAdapter(surfSpotAdapter);
+
+            // Actoin listener for the items in the listView
+            listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                    SurfSpot surfSpot = (SurfSpot) listView.getItemAtPosition(i);
+                    Intent goToSurfSpot = new Intent(SearchActivity.this, SurfSpotActivity.class);
+                    goToSurfSpot.putExtra("surfSpot", surfSpot.spotName);
+                    goToSurfSpot.putExtra("spotLink", surfSpot.spotLink);
+                    goToSurfSpot.putExtra("calendarDate", 0);   // CalendarDate 0 corresponds to today
+                    goToSurfSpot.putExtra("country", surfSpot.country);
+                    goToSurfSpot.putExtra("spotSaved", false);
+                    startActivity(goToSurfSpot);
+                }
+            });
+        }
     }
 
     private void getSpotArray(URL url){
@@ -98,19 +106,13 @@ public class SearchActivity extends AppCompatActivity {
             JSONObject jsonDict = new JSONObject(new WeatherAsyncTask().execute(url).get());
             JSONObject response = jsonDict.getJSONObject("response");
             JSONArray spotNameArray = response.getJSONArray("results");
-            if (spotNameArray.length() == 0) {
-                Toast.makeText(this, "There were no matching surf spots", Toast.LENGTH_SHORT).show();
-            } else {
-                for (int i = 0; i < spotNameArray.length(); i++) {
-                    JSONObject spotName = spotNameArray.getJSONObject(i);
-                    surfSpotList.add(new SurfSpot(spotName.getString("name"),
-                            spotName.getString("country_name"),
-                            spotName.getString("l")));
-                }
+            for (int i = 0; i < spotNameArray.length(); i++) {
+                JSONObject spotName = spotNameArray.getJSONObject(i);
+                // "l" stands for surfspot link and is a unique Spot id.
+                surfSpotList.add(new SurfSpot(spotName.getString("name"),
+                        spotName.getString("country_name"),
+                        spotName.getString("l")));
             }
-
-
-
 
         } catch (InterruptedException | ExecutionException | JSONException e) {
             e.printStackTrace();
