@@ -1,4 +1,4 @@
-Reviewed by Nils hulzeBosch:
+Reviewed by Nils HulzeBosch:
 
 MainActivity:
 - Code ziet er goed uit! Duidelijke naamgeving van variabelen/methods en indents. Methods zijn niet te lang, maar ik zou bij getSavedSpots() en getSavedSessions() wel comments toevoegen, iets van 3 regels per method bovenaan of in de method af en toe een regel. Anders moet je nog nét teveel ‘raden’. Bij de rest zijn de comments wel goed, maar zelf doe ik meestal iets meer comments (ook omdat ik dat zelf chill vind, maar is je eigen keuze).
