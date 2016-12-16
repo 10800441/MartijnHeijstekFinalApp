@@ -7,7 +7,7 @@
 
 ## General purpose
 
-#### As every surfer will probably know preperation of your surf session is very important.
+#### As every surfer will know, preperation of your surf session is very important.
 #### Knowing what the wheater will be and good planning of your sessions is critical for an optimal experience.
 #### This app allows you to quickly search for surf spots all over the world and save them to your pesonal list.
 #### Also the surfer can save sessions and see them in an organized overview.
