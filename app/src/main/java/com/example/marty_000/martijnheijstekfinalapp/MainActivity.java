@@ -92,24 +92,17 @@ public class MainActivity extends AppCompatActivity {
             getSavedSessions();
         }
 
+        //
+        storeUserName();
 
-        // Save the username in SharedPreferences
-        if (!prefs.contains("username")) {
-            SharedPreferences.Editor prefsEditor = prefs.edit();
-            mUsername = user.getDisplayName();
-            if (mUsername != null) prefsEditor.putString("username", mUsername);
-            prefsEditor.apply();
-        } else {
-            mUsername = prefs.getString("username", null);
-        }
-        subtitle.setText("Signed in as " +   mUsername);
-
-        // peace where the adapter is set to the listView
+        // peace where the adapters are set to the listViews
         setSpotAdapter();
         setSessionAdapter();
     }
 
+    // Settings
     private void initialiseParameters(){
+        // Check if a firebase instance is present
         if (database == null) {
             database = FirebaseDatabase.getInstance();
         }
@@ -124,8 +117,19 @@ public class MainActivity extends AppCompatActivity {
         subtitle = (TextView) findViewById(R.id.subtitleMain);
         spotListView = (ListView) findViewById(R.id.spotListView);
         sessionListView = (ListView) findViewById(R.id.sessionListView);
+    }
 
-
+    private void storeUserName(){
+        // Save the username in SharedPreferences
+        if (!prefs.contains("username")) {
+            SharedPreferences.Editor prefsEditor = prefs.edit();
+            mUsername = user.getDisplayName();
+            if (mUsername != null) prefsEditor.putString("username", mUsername);
+            prefsEditor.apply();
+        } else {
+            mUsername = prefs.getString("username", null);
+        }
+        subtitle.setText("Signed in as " +   mUsername);
     }
 
     // Fill the listViews and set listerers
