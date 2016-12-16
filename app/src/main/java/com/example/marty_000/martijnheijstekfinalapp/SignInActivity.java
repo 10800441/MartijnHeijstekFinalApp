@@ -1,6 +1,7 @@
 package com.example.marty_000.martijnheijstekfinalapp;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -43,6 +44,7 @@ public class SignInActivity extends AppCompatActivity implements View.OnClickLis
     private static final String TAG = "SignInActivity";
     private FirebaseAuth.AuthStateListener authListener;
     private GoogleApiClient mGoogleApiClient;
+    SharedPreferences prefs;
     TextView mStatusTextView;
 
 
@@ -55,16 +57,26 @@ public class SignInActivity extends AppCompatActivity implements View.OnClickLis
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sign_in);
 
+
+        prefs = getApplicationContext().getSharedPreferences("UponFirstUse", MODE_PRIVATE);
+
         mStatusTextView = (TextView) findViewById(R.id.mStatusTextView);
         findViewById(R.id.sign_in_button).setOnClickListener(this);
+
+        if (savedInstanceState == null) {
+            FirebaseDatabase database = FirebaseDatabase.getInstance();
+            if (database== null) { database.setPersistenceEnabled(true);}
+        }
+
+        authenticateUser();
+    }
+
+
+    private void authenticateUser(){
 
         // Configure Google Sign In
         // Configure sign-in to request the user's ID, email address, and basic
         // profile. ID and basic profile are included in DEFAULT_SIGN_IN.
-        if (savedInstanceState == null) {
-            FirebaseDatabase.getInstance().setPersistenceEnabled(true);
-        } 
-
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestIdToken(getString(R.string.default_web_client_id))
                 .requestEmail()
@@ -95,38 +107,39 @@ public class SignInActivity extends AppCompatActivity implements View.OnClickLis
         };
     }
 
-    // Oncklick for the button
+    // On click for the button > the user id first signed out
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.sign_in_button:
-                signIn();
-                break;
-            case R.id.sign_out_button:
-                signOut();
+                if (!prefs.contains("neverLoggedIn")){
+                    signOut();
+                } else {
+                    SharedPreferences.Editor edit = prefs.edit();
+                    edit.putString("neverLoggedIn", "neverLoggedIn");
+                    edit.apply();
+                    signIn();
+                }
                 break;
         }
 
     }
 
+    private void signOut() {
+        Auth.GoogleSignInApi.signOut(mGoogleApiClient).setResultCallback(
+                new ResultCallback<Status>() {
+                    @Override
+                    public void onResult(Status status) {
+                        signIn();
+                    }
+                });
+    }
     // Use the goole API
     private void signIn() {
         Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(mGoogleApiClient);
         startActivityForResult(signInIntent, RC_SIGN_IN);
     }
-    public void signOut() {
-        Auth.GoogleSignInApi.signOut(mGoogleApiClient).setResultCallback(
-                new ResultCallback<Status>() {
-                    @Override
-                    public void onResult(Status status) {
-                        Intent intent = new Intent(getApplication(), MainActivity.class);
-                        startActivity(intent);
-                        finish();
-                    }
-                });
-    }
 
-
-
+    // Results from the mGoogleApiClient
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);

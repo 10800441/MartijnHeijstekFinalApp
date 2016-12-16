@@ -8,7 +8,7 @@ package com.example.marty_000.martijnheijstekfinalapp;
 // Standard AsyncTask class
 public class WeatherAsyncTask extends AsyncTask<URL,Integer,String> {
 
-    // Retrieve the information from the server on a seperate thread
+       // Retrieve the information from the server on a seperate thread
     @Override
     protected String doInBackground(URL... params) {
         URL url = params[0];
@@ -20,7 +20,7 @@ public class WeatherAsyncTask extends AsyncTask<URL,Integer,String> {
             ex.printStackTrace();
         }
 
-        String result= "";
+        String result = "";
         String jsonLine;
 
         try {
@@ -39,9 +39,4 @@ public class WeatherAsyncTask extends AsyncTask<URL,Integer,String> {
         // Returns the json dict as a string
         return result;
     }
-// TODO set Listview in here
-//    @Override
-//    protected void onPostExecute(String s) {
-//        super.onPostExecute(s);
-//    }
 }

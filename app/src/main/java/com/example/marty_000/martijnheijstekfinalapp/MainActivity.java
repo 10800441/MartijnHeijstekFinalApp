@@ -18,12 +18,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.android.gms.auth.api.Auth;
-import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
-import com.google.android.gms.auth.api.signin.SignInAccount;
 import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.common.api.ResultCallback;
-import com.google.android.gms.common.api.Status;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -58,19 +53,19 @@ public class MainActivity extends AppCompatActivity {
     private ArrayAdapter<SurfSpot> spotAdapter;
     private ArrayAdapter<Session> sessionAdapter;
     SharedPreferences prefs;
+
     public static final String ANONYMOUS = "anonymous";
     String mUsername;
     private static final String TAG = "MainActivity";
-    public static final String MESSAGES_CHILD = "messages";
     ArrayList<SurfSpot> userSavedSpots = new ArrayList<>();
     ArrayList<Session> userSavedSessions = new ArrayList<>();
     ListView spotListView;
     ListView sessionListView;
+    TextView subtitle;
 
     // Firebase instance variables
     private FirebaseAuth mFirebaseAuth;
     private FirebaseUser user;
-    private GoogleApiClient mGoogleApiClient;
     Context context;
 
 
@@ -79,26 +74,10 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        database = FirebaseDatabase.getInstance();
-
-        mUsername = ANONYMOUS;
-        prefs = getApplicationContext().getSharedPreferences("listNames", MODE_PRIVATE);
-        context = getApplicationContext();
-
-        // Initialize Firebase Auth and get user
-        mFirebaseAuth = FirebaseAuth.getInstance();
-        user =  mFirebaseAuth.getCurrentUser();
-
-
-        TextView subtitle = (TextView) findViewById(R.id.subtitleMain);
-        spotListView = (ListView) findViewById(R.id.spotListView);
-        sessionListView = (ListView) findViewById(R.id.sessionListView);
-
+        initialiseParameters();
 
         // Send user to the SignInActivity
         if (user == null) {
-
-
             // Give the user a message to sign in
             welcomeUser();
 
@@ -123,23 +102,37 @@ public class MainActivity extends AppCompatActivity {
         } else {
             mUsername = prefs.getString("username", null);
         }
-        subtitle.setText("You are signed in as "+ mUsername);
+        subtitle.setText("Signed in as " +   mUsername);
 
         // peace where the adapter is set to the listView
-        setAdapters();
+        setSpotAdapter();
+        setSessionAdapter();
+    }
+
+    private void initialiseParameters(){
+        if (database == null) {
+            database = FirebaseDatabase.getInstance();
+        }
+        mUsername = ANONYMOUS;
+        prefs = getApplicationContext().getSharedPreferences("storeUsername", MODE_PRIVATE);
+        context = getApplicationContext();
+
+        // Initialize Firebase Auth and get user
+        mFirebaseAuth = FirebaseAuth.getInstance();
+        user =  mFirebaseAuth.getCurrentUser();
+
+        subtitle = (TextView) findViewById(R.id.subtitleMain);
+        spotListView = (ListView) findViewById(R.id.spotListView);
+        sessionListView = (ListView) findViewById(R.id.sessionListView);
+
+
     }
 
     // Fill the listViews and set listerers
-    private void setAdapters() {
-
-        // Two ListViews: one for SurfSpots and one for Session
+    private void setSpotAdapter() {
         spotAdapter = new ArrayAdapter<>(this,
-            android.R.layout.simple_list_item_1, userSavedSpots);
+                android.R.layout.simple_list_item_1, userSavedSpots);
         spotListView.setAdapter(spotAdapter);
-
-        sessionAdapter = new ArrayAdapter<>(this,
-            android.R.layout.simple_list_item_1, userSavedSessions);
-        sessionListView.setAdapter(sessionAdapter);
 
         spotListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -169,6 +162,23 @@ public class MainActivity extends AppCompatActivity {
                 return true;
             }
         });
+    }
+
+    private void setSessionAdapter() {
+
+        sessionAdapter = new ArrayAdapter<>(this,
+            android.R.layout.simple_list_item_1, userSavedSessions);
+        sessionListView.setAdapter(sessionAdapter);
+
+        sessionListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                Session session = (Session) sessionListView.getItemAtPosition(i);
+                if(session.comment != null){
+                    showComment(session);
+                }
+            }
+        });
 
         // Long press to delete a session
         sessionListView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
@@ -181,6 +191,22 @@ public class MainActivity extends AppCompatActivity {
                 return true;
             }
         });
+    }
+
+    // Show a comment the user has given on a session
+    private void showComment(Session session) {
+        AlertDialog.Builder alert = new AlertDialog.Builder(this);
+        alert.setTitle("View your session");
+        alert.setMessage("Date " + session.day + "/" + session.month + "/" + session.year+ "\nSurf spot "+
+                session.spotName+ "\nComment:\n"+session.comment);
+
+        // OK Button
+        alert.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int whichButton) {
+                dialog.cancel();
+            }
+        });
+        alert.show();
     }
 
     // Search for a surfSpot by name
@@ -265,7 +291,6 @@ public class MainActivity extends AppCompatActivity {
                     }
                 }
                 spotAdapter.notifyDataSetChanged();
-                setAdapters();
             }
 
             @Override
@@ -276,7 +301,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     // Retrieve the user saved sessions from firebase
-    private void getSavedSessions(){
+    private void getSavedSessions() {
 
         surfSessionReference = database.getReference("/users/" + user.getUid() + "/surfSessions/");
         surfSessionReference.addValueEventListener(new ValueEventListener() {
@@ -292,9 +317,9 @@ public class MainActivity extends AppCompatActivity {
                         long month = 0;
                         long day = 0;
                         String spotName = null;
+                        String comment = null;
 
                         HashMap<String, String> a = entry.getValue();
-                        System.out.println(a.toString()+a.values().toString());
                         Iterator it = a.entrySet().iterator();
 
 
@@ -312,12 +337,18 @@ public class MainActivity extends AppCompatActivity {
                             if (pair.getKey().toString().equals("spotName")) {
                                 spotName = (String) pair.getValue();
                             }
+                            if (pair.getKey().toString().equals("comment")) {
+                                comment = (String) pair.getValue();
+                            }
                         }
-                        userSavedSessions.add(new Session((int) day,(int) month,(int) year, spotName));
+                        if (comment != null){
+                            userSavedSessions.add(new Session((int) day, (int) month, (int) year, spotName, comment));
+                        } else {
+                            userSavedSessions.add(new Session((int) day, (int) month, (int) year, spotName));
+                        }
                     }
                 }
-                spotAdapter.notifyDataSetChanged();
-                setAdapters();
+                sessionAdapter.notifyDataSetChanged();
             }
 
             @Override
@@ -345,7 +376,6 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-
         // Ask the user if he/she wants to  log out
         AlertDialog.Builder alert = new AlertDialog.Builder(this);
         alert.setTitle("Warning");
@@ -369,7 +399,4 @@ public class MainActivity extends AppCompatActivity {
 
         alert.show();
     }
-
-
-
 }

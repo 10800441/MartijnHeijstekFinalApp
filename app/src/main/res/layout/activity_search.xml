@@ -11,11 +11,11 @@
     tools:context="com.example.marty_000.martijnheijstekfinalapp.SearchActivity">
 
     <RelativeLayout
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/titleLayout">
         <TextView
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
             android:textSize="18sp"
@@ -34,13 +34,39 @@
     <RelativeLayout
         android:layout_width="wrap_content"
         android:layout_below="@+id/titleLayout"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:id="@+id/resultsListView"
+        android:visibility="visible">
         <ListView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
             android:layout_margin="5dp"
             android:id="@+id/searchResultListView"/>
+    </RelativeLayout>
+    <RelativeLayout
+        android:background="@drawable/back"
+        android:padding="10dp"
+        android:layout_below="@+id/titleLayout"
+        android:layout_width="match_parent"
+        android:layout_margin="5dp"
+        android:layout_centerVertical="true"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        android:id="@+id/searchBox">
+        <EditText
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/retrySearchEditText"
+            android:hint="@string/searchHint"/>
+        <Button
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="retrySearch"
+            android:id="@+id/SearchButton"
+            android:text="@string/search"/>
     </RelativeLayout>
 
 </RelativeLayout>

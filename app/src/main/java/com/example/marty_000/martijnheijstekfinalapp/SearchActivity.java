@@ -9,7 +9,9 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -71,9 +73,13 @@ public class SearchActivity extends AppCompatActivity {
     // A standard ArrayAdapter that will fill the ListView with names of known Surfspots
     private void setAdapter() {
         if (surfSpotList.size() == 0 || surfSpotList == null) {
-            Toast.makeText(this, "There were no matching surf spots", Toast.LENGTH_SHORT).show();
+            // Give the user the option to retry a search
             TextView subtitle = (TextView) findViewById(R.id.searchSubtitle);
             subtitle.setText(R.string.noSpots);
+            RelativeLayout searchBox = (RelativeLayout) findViewById(R.id.searchBox);
+            RelativeLayout resultsListView = (RelativeLayout) findViewById(R.id.resultsListView);
+            searchBox.setVisibility(View.VISIBLE);
+            resultsListView.setVisibility(View.GONE);
         }
 
         // Fill the ListView with the aquired surfspots
@@ -99,6 +105,23 @@ public class SearchActivity extends AppCompatActivity {
             });
         }
     }
+    public void retrySearch(View v) {
+        switch (v.getId()) {
+            case R.id.SearchButton:
+                EditText search = (EditText) findViewById(R.id.retrySearchEditText);
+                String query = search.getText().toString();
+
+                if (query.length() != 0) {
+                    Intent intent = new Intent(getApplication(), SearchActivity.class);
+                    intent.putExtra("searchQuery", query);
+                    startActivity(intent);
+                } else {
+                    Toast.makeText(this, "Please enter the name of a place", Toast.LENGTH_SHORT).show();
+                }
+        }
+    }
+
+
 
     private void getSpotArray(URL url){
         try {

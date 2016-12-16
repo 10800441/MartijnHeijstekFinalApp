@@ -49,10 +49,4 @@
         android:id="@+id/appDescription"
         android:text="@string/appDescription"
         android:layout_alignParentBottom="true"/>
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:id="@+id/sign_out_button"
-        android:text="signOut"/>
 </RelativeLayout>

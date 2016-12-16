@@ -9,6 +9,7 @@
     <string name="searchHint">Search for a surfSpot</string>
     <string name="signed_in_fmt">User</string>
     <string name="signedInAs">You are signed in as:</string>
+    <string name="signedInmessage">You are signed in as </string>
     <string name="searchTitle">Search Spot</string>
     <string name="subtitleText">Results for </string>
     <string name="search">Search</string>
