@@ -14,11 +14,11 @@
 
 ## Functionalities
 
-#### Personal account (log in with google services).
-#### Overview of saved surf spots and surf sessions, stored on the web.
-#### Search function by city name (surf spot name).
-#### Overview of a surfspot with current wheather conditions.
-#### Possability to chose a date and save a session.
+#### [-] Personal account (log in with google services).
+#### [-] Overview of saved surf spots and surf sessions, stored on the web.
+#### [-] Search function by city name (surf spot name).
+#### [-] Overview of a surfspot with current wheather conditions.
+#### [-] Possability to chose a date and save a session.
 
 ## Room for improvement
 
