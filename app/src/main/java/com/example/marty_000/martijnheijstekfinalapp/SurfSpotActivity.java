@@ -242,9 +242,9 @@ public class SurfSpotActivity extends AppCompatActivity {
         alert.setMessage("You can add a comment to your session");
 
         // Open key board
-        InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+        final InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
         imm.toggleSoftInput(InputMethodManager.SHOW_FORCED,0);
-
+        imm.toggleSoftInput(InputMethodManager.HIDE_IMPLICIT_ONLY,0);
         // Set an EditText view to get user input
         final EditText input = new EditText(this);
         alert.setView(input);
@@ -258,8 +258,9 @@ public class SurfSpotActivity extends AppCompatActivity {
                     Toast.makeText(context, "Session is saved", Toast.LENGTH_SHORT).show();
                     String comment = input.getText().toString();
                     surfSessionReference.
-                            child((day + "-" + month + "-" + year)).
+                            child((day + "-" + month + "-" + year+spotName)).
                             setValue(new Session(day, month, year, spotName, comment));
+                    imm.toggleSoftInput(InputMethodManager.HIDE_IMPLICIT_ONLY,0);
 
                 } else {
                     Toast.makeText(context, "Please enter text!", Toast.LENGTH_SHORT).show();
@@ -273,11 +274,14 @@ public class SurfSpotActivity extends AppCompatActivity {
             public void onClick(DialogInterface dialog, int whichButton) {
                 Toast.makeText(context, "Session is saved", Toast.LENGTH_SHORT).show();
                 surfSessionReference.
-                        child((day + "-" + month + "-" + year)).
+                        child((day + "-" + month + "-" + year + spotName)).
                         setValue(new Session(day, month, year, spotName));
+                imm.toggleSoftInput(InputMethodManager.HIDE_IMPLICIT_ONLY,0);
+
             }
         });
         alert.show();
+ 
     }
 
     // The following methods are used for the calendar, source:

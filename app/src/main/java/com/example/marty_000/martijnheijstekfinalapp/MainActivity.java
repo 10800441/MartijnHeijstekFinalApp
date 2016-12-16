@@ -87,17 +87,20 @@ public class MainActivity extends AppCompatActivity {
             return;
 
         } else {
+            //
+            storeUserName();
+
+            // peace where the adapters are set to the listViews
+            setSpotAdapter();
+            setSessionAdapter();
+
             // Fill ListViews with saved items
             getSavedSpots();
             getSavedSessions();
         }
 
-        //
-        storeUserName();
 
-        // peace where the adapters are set to the listViews
-        setSpotAdapter();
-        setSessionAdapter();
+
     }
 
     // Settings
@@ -161,6 +164,7 @@ public class MainActivity extends AppCompatActivity {
                 if (spot != null) {
                     surfSpotReference.child(spot.spotName).removeValue();
                     userSavedSpots.remove(spot);
+                    spotAdapter.clear();
                     spotAdapter.notifyDataSetChanged();
                 }
                 return true;
@@ -189,9 +193,10 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public boolean onItemLongClick(AdapterView<?> arg0, View arg1, int pos, long id) {
                 Session session = sessionAdapter.getItem(pos);
-                surfSessionReference.child(session.day+"-"+session.month+"-"+session.year).removeValue();
+                surfSessionReference.child(session.day+"-"+session.month+"-"+session.year+session.spotName).removeValue();
                 userSavedSessions.remove(session);
-                sessionAdapter.notifyDataSetChanged();
+                sessionAdapter.clear();
+               sessionAdapter.notifyDataSetChanged();
                 return true;
             }
         });
@@ -378,6 +383,7 @@ public class MainActivity extends AppCompatActivity {
         alert.show();
     }
 
+    // The user can return to the SignInActivity
     @Override
     public void onBackPressed() {
         // Ask the user if he/she wants to  log out
