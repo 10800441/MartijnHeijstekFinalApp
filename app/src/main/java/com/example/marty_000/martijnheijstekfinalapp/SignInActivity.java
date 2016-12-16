@@ -7,7 +7,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -47,7 +46,6 @@ public class SignInActivity extends AppCompatActivity implements View.OnClickLis
     SharedPreferences prefs;
     TextView mStatusTextView;
 
-
     // Firebase instance variables
     private FirebaseAuth mFirebaseAuth;
     private static final int RC_SIGN_IN = 9001;
@@ -57,12 +55,12 @@ public class SignInActivity extends AppCompatActivity implements View.OnClickLis
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sign_in);
 
-
         prefs = getApplicationContext().getSharedPreferences("UponFirstUse", MODE_PRIVATE);
 
         mStatusTextView = (TextView) findViewById(R.id.mStatusTextView);
         findViewById(R.id.sign_in_button).setOnClickListener(this);
 
+        // Only create the FireDatabase instance once
         if (savedInstanceState == null) {
             FirebaseDatabase database = FirebaseDatabase.getInstance();
             if (database== null) { database.setPersistenceEnabled(true);}
@@ -124,6 +122,7 @@ public class SignInActivity extends AppCompatActivity implements View.OnClickLis
 
     }
 
+    //Signs the user out
     private void signOut() {
         Auth.GoogleSignInApi.signOut(mGoogleApiClient).setResultCallback(
                 new ResultCallback<Status>() {
@@ -133,6 +132,7 @@ public class SignInActivity extends AppCompatActivity implements View.OnClickLis
                     }
                 });
     }
+
     // Use the goole API
     private void signIn() {
         Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(mGoogleApiClient);

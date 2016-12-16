@@ -42,6 +42,7 @@ public class SearchActivity extends AppCompatActivity {
 
     ArrayList<SurfSpot> surfSpotList = new ArrayList<>();
     ListView listView = null;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -73,6 +74,7 @@ public class SearchActivity extends AppCompatActivity {
     // A standard ArrayAdapter that will fill the ListView with names of known Surfspots
     private void setAdapter() {
         if (surfSpotList.size() == 0 || surfSpotList == null) {
+
             // Give the user the option to retry a search
             TextView subtitle = (TextView) findViewById(R.id.searchSubtitle);
             subtitle.setText(R.string.noSpots);
@@ -105,6 +107,8 @@ public class SearchActivity extends AppCompatActivity {
             });
         }
     }
+
+    // Initial search had no results, the user must retry
     public void retrySearch(View v) {
         switch (v.getId()) {
             case R.id.SearchButton:
@@ -122,13 +126,14 @@ public class SearchActivity extends AppCompatActivity {
     }
 
 
-
+    // Retrieve all spots corresponding to the users query
     private void getSpotArray(URL url){
         try {
             // Get dict from the AsyncTask
             JSONObject jsonDict = new JSONObject(new WeatherAsyncTask().execute(url).get());
             JSONObject response = jsonDict.getJSONObject("response");
             JSONArray spotNameArray = response.getJSONArray("results");
+
             for (int i = 0; i < spotNameArray.length(); i++) {
                 JSONObject spotName = spotNameArray.getJSONObject(i);
                 // "l" stands for surfspot link and is a unique Spot id.

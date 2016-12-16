@@ -11,6 +11,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
@@ -18,7 +19,6 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -50,13 +50,13 @@ public class MainActivity extends AppCompatActivity {
     private FirebaseDatabase database;
     private DatabaseReference surfSpotReference;
     private DatabaseReference surfSessionReference;
-    private ArrayAdapter<SurfSpot> spotAdapter;
-    private ArrayAdapter<Session> sessionAdapter;
     SharedPreferences prefs;
 
     public static final String ANONYMOUS = "anonymous";
     String mUsername;
     private static final String TAG = "MainActivity";
+    private ArrayAdapter<SurfSpot> spotAdapter;
+    private ArrayAdapter<Session> sessionAdapter;
     ArrayList<SurfSpot> userSavedSpots = new ArrayList<>();
     ArrayList<Session> userSavedSessions = new ArrayList<>();
     ListView spotListView;
@@ -74,7 +74,8 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        initialiseParameters();
+        // Instantiate instances an get TextViews
+        initialiseValues();
 
         // Send user to the SignInActivity
         if (user == null) {
@@ -97,14 +98,15 @@ public class MainActivity extends AppCompatActivity {
             // Fill ListViews with saved items
             getSavedSpots();
             getSavedSessions();
+            
         }
 
 
 
     }
 
-    // Settings
-    private void initialiseParameters(){
+    // Instantiate instances an get TextViews
+    private void initialiseValues(){
         // Check if a firebase instance is present
         if (database == null) {
             database = FirebaseDatabase.getInstance();
@@ -122,8 +124,8 @@ public class MainActivity extends AppCompatActivity {
         sessionListView = (ListView) findViewById(R.id.sessionListView);
     }
 
+    // Save the username in SharedPreferences
     private void storeUserName(){
-        // Save the username in SharedPreferences
         if (!prefs.contains("username")) {
             SharedPreferences.Editor prefsEditor = prefs.edit();
             mUsername = user.getDisplayName();
@@ -135,7 +137,7 @@ public class MainActivity extends AppCompatActivity {
         subtitle.setText("Signed in as " +   mUsername);
     }
 
-    // Fill the listViews and set listerers
+    // Fill the SurfSpot-listView
     private void setSpotAdapter() {
         spotAdapter = new ArrayAdapter<>(this,
                 android.R.layout.simple_list_item_1, userSavedSpots);
@@ -146,6 +148,7 @@ public class MainActivity extends AppCompatActivity {
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 SurfSpot surfSpot = (SurfSpot) spotListView.getItemAtPosition(i);
 
+                // Go to SutfSpotActivity
                 Intent goToSurfSpot = new Intent(MainActivity.this, SurfSpotActivity.class);
                 goToSurfSpot.putExtra("surfSpot", surfSpot.spotName);
                 goToSurfSpot.putExtra("spotLink", surfSpot.spotLink);
@@ -172,6 +175,7 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    // Fill the Session-listView
     private void setSessionAdapter() {
 
         sessionAdapter = new ArrayAdapter<>(this,
@@ -391,7 +395,7 @@ public class MainActivity extends AppCompatActivity {
         alert.setTitle("Warning");
         alert.setMessage("are you sure you want to sign out?");
 
-        // Sign the user out and restart the main activity
+        // Sign the user out and rgo to the SignInActivity
         alert.setPositiveButton("Sign out", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int whichButton) {
                 FirebaseAuth.getInstance().signOut();

@@ -15,6 +15,7 @@ public class WeatherAsyncTask extends AsyncTask<URL,Integer,String> {
         BufferedReader rd = null;
 
         try {
+            // Open the stream
             rd = new BufferedReader(new InputStreamReader(url.openStream()));
         } catch (IOException ex) {
             ex.printStackTrace();
@@ -24,12 +25,15 @@ public class WeatherAsyncTask extends AsyncTask<URL,Integer,String> {
         String jsonLine;
 
         try {
+            // Append all results
             while ((jsonLine = rd.readLine()) != null) {
                 result += jsonLine;
             }
         } catch (IOException ex) {
             ex.printStackTrace();
-        } finally {
+        }
+        // Close stream
+        finally {
             try {
                 rd.close();
             } catch (IOException ex) {

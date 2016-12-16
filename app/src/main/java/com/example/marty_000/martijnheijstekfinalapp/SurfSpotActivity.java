@@ -5,7 +5,6 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.support.annotation.NonNull;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -45,7 +44,7 @@ import java.util.concurrent.ExecutionException;
  *
  * Description: SurfSpotActivity
  * This class displays an overview of a specific surfSpot including
- * the current waether.
+ * the current weather.
  */
 
 public class SurfSpotActivity extends AppCompatActivity {
@@ -54,7 +53,6 @@ public class SurfSpotActivity extends AppCompatActivity {
     private DatabaseReference surfSpotReference;
     private DatabaseReference surfSessionReference;
     private FirebaseAuth Auth;
-    private FirebaseAuth.AuthStateListener authListener;
     private FirebaseUser user;
     private static final String TAG = "SurfSpotActivity";
 
@@ -87,12 +85,14 @@ public class SurfSpotActivity extends AppCompatActivity {
             // retrieve user preferences
             retrievePreferences();
         }
+
+        // Set the save/remove-spot button based on preferences
         if(spotSaved) {
             saveSpotButton.setText(R.string.removeSpot);
             saveSpotTitle.setText(R.string.removeSpotTitle);
         }
 
-        // access API to retrieve spot specifics
+        // Access API to retrieve spot specifics
         retrieveSpotWeather();
 
         // Make a small calendar to change the date
@@ -110,6 +110,8 @@ public class SurfSpotActivity extends AppCompatActivity {
         context = getApplicationContext();
         Auth = FirebaseAuth.getInstance();
         user = Auth.getCurrentUser();
+
+        // Get information from previous intent
         Intent PrevScreenIntent = getIntent();
         spotName = PrevScreenIntent.getStringExtra("surfSpot");
         spotLink= PrevScreenIntent.getStringExtra("spotLink");
@@ -141,6 +143,7 @@ public class SurfSpotActivity extends AppCompatActivity {
                         HashMap<String, String> a = entry.getValue();
                         Iterator it =a.entrySet().iterator();
 
+                        // Iterate over all SurfSpots in the FireDatabase
                         while (it.hasNext()) {
                             Map.Entry pair = (Map.Entry)it.next();
                             if(pair.getKey().toString().equals("spotLink")){
@@ -179,6 +182,7 @@ public class SurfSpotActivity extends AppCompatActivity {
 
                 for (int i = 0; i < forecast.length(); i++) {
                     JSONObject day = forecast.getJSONObject(i);
+
                     // Get the weather for the required date (default is current day)
                     if (day.getString("period").equals(String.valueOf(relativeDate))) {
                         weatherDescription.setText(day.getString("fcttext_metric"));
@@ -241,10 +245,10 @@ public class SurfSpotActivity extends AppCompatActivity {
         alert.setTitle("Comment on this session");
         alert.setMessage("You can add a comment to your session");
 
-        // Open key board
+        // Open softkey board
         final InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
         imm.toggleSoftInput(InputMethodManager.SHOW_FORCED,0);
-        imm.toggleSoftInput(InputMethodManager.HIDE_IMPLICIT_ONLY,0);
+
         // Set an EditText view to get user input
         final EditText input = new EditText(this);
         alert.setView(input);
@@ -260,6 +264,7 @@ public class SurfSpotActivity extends AppCompatActivity {
                     surfSessionReference.
                             child((day + "-" + month + "-" + year+spotName)).
                             setValue(new Session(day, month, year, spotName, comment));
+                    //Close soft keyboard
                     imm.toggleSoftInput(InputMethodManager.HIDE_IMPLICIT_ONLY,0);
 
                 } else {
@@ -276,12 +281,13 @@ public class SurfSpotActivity extends AppCompatActivity {
                 surfSessionReference.
                         child((day + "-" + month + "-" + year + spotName)).
                         setValue(new Session(day, month, year, spotName));
+                //Close soft keyboard
                 imm.toggleSoftInput(InputMethodManager.HIDE_IMPLICIT_ONLY,0);
 
             }
         });
         alert.show();
- 
+
     }
 
     // The following methods are used for the calendar, source:
